@@ -14,8 +14,7 @@ export const usePrivyAuth = () => {
     createWallet,
     linkWallet,
     unlinkWallet,
-    // Access wallets from the user object instead of directly from usePrivy
-    wallet, // This gives access to the embedded wallet
+    // Access embedded wallet from usePrivy - adjust based on actual Privy API
   } = usePrivy();
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -63,10 +62,10 @@ export const usePrivyAuth = () => {
   };
 
   const getUserWallet = () => {
-    if (!authenticated || !wallet) return null;
+    if (!authenticated || !user?.wallet) return null;
     
-    // Return the embedded wallet
-    return wallet;
+    // Return the embedded wallet from the user object
+    return user.wallet;
   };
 
   return {
@@ -78,7 +77,7 @@ export const usePrivyAuth = () => {
     createWallet,
     linkWallet,
     unlinkWallet,
-    wallets: wallet ? [wallet] : [], // Provide a wallets array for compatibility
+    wallets: user?.wallet ? [user.wallet] : [], // Provide a wallets array for compatibility
     getUserWallet,
   };
 };

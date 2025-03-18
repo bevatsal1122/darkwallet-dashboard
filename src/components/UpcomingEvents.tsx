@@ -46,8 +46,8 @@ const UpcomingEvents: React.FC<EventProps> = ({ className = "" }) => {
     }
   ];
 
-  // Mock data for NBA stats
-  const nbaStats = {
+  // Mock data for stats
+  const marketStats = {
     totalMarkets: 124,
     avgSuccessRate: 68,
     avgROI: 14.2,
@@ -100,7 +100,7 @@ const UpcomingEvents: React.FC<EventProps> = ({ className = "" }) => {
         
         <AccordionItem value="stats" className="border-0 mt-6">
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-semibold">NBA Market Stats</h2>
+            <h2 className="text-xl font-semibold">Market Stats</h2>
             <AccordionTrigger className="py-0"></AccordionTrigger>
           </div>
           
@@ -108,29 +108,29 @@ const UpcomingEvents: React.FC<EventProps> = ({ className = "" }) => {
             <div className="grid grid-cols-2 gap-4">
               <Card className="overflow-hidden border-0 bg-card/50">
                 <CardContent className="p-4">
-                  <h3 className="text-xs text-muted-foreground mb-1">Total NBA Markets</h3>
-                  <p className="text-xl font-bold">{nbaStats.totalMarkets}</p>
+                  <h3 className="text-xs text-muted-foreground mb-1">Total Markets</h3>
+                  <p className="text-xl font-bold">{marketStats.totalMarkets}</p>
                 </CardContent>
               </Card>
               
               <Card className="overflow-hidden border-0 bg-card/50">
                 <CardContent className="p-4">
                   <h3 className="text-xs text-muted-foreground mb-1">Success Rate</h3>
-                  <p className="text-xl font-bold text-green-400">{nbaStats.avgSuccessRate}%</p>
+                  <p className="text-xl font-bold text-green-400">{marketStats.avgSuccessRate}%</p>
                 </CardContent>
               </Card>
               
               <Card className="overflow-hidden border-0 bg-card/50">
                 <CardContent className="p-4">
                   <h3 className="text-xs text-muted-foreground mb-1">Average ROI</h3>
-                  <p className="text-xl font-bold text-green-400">+{nbaStats.avgROI}%</p>
+                  <p className="text-xl font-bold text-green-400">+{marketStats.avgROI}%</p>
                 </CardContent>
               </Card>
               
               <Card className="overflow-hidden border-0 bg-card/50">
                 <CardContent className="p-4">
                   <h3 className="text-xs text-muted-foreground mb-1">Best Performance</h3>
-                  <p className="text-xl font-bold">{nbaStats.bestPerforming}</p>
+                  <p className="text-xl font-bold">{marketStats.bestPerforming}</p>
                 </CardContent>
               </Card>
             </div>

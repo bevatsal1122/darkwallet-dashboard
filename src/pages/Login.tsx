@@ -1,19 +1,17 @@
 
-import React, { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import React from "react";
 import AuthForm from "@/components/AuthForm";
 import { motion } from "framer-motion";
+import { usePrivyAuth } from "@/hooks/usePrivyAuth";
+import { Navigate } from "react-router-dom";
 
 const Login: React.FC = () => {
-  const navigate = useNavigate();
+  const { isAuthenticated, ready } = usePrivyAuth();
 
-  useEffect(() => {
-    // Check if user is already logged in
-    const isAuthenticated = localStorage.getItem("isAuthenticated") === "true";
-    if (isAuthenticated) {
-      navigate("/dashboard");
-    }
-  }, [navigate]);
+  // Redirect if already authenticated
+  if (ready && isAuthenticated) {
+    return <Navigate to="/dashboard" replace />;
+  }
 
   return (
     <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center px-4 py-12">

@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
@@ -10,31 +10,18 @@ import {
   User, 
   LogOut, 
   Menu, 
-  X 
+  X,
+  Wallet
 } from "lucide-react";
+import { usePrivyAuth } from "@/hooks/usePrivyAuth";
 
 const Navbar: React.FC = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
+  const { isAuthenticated, login, logout, getUserWallet } = usePrivyAuth();
   
-  // Mock authentication check - replace with actual auth logic later
-  useEffect(() => {
-    // Simulating auth check
-    const hasAuth = localStorage.getItem("isAuthenticated") === "true";
-    setIsLoggedIn(hasAuth);
-  }, []);
-
-  // For demo purposes - this would be replaced with real authentication
-  const handleLogin = () => {
-    localStorage.setItem("isAuthenticated", "true");
-    setIsLoggedIn(true);
-  };
-
-  const handleLogout = () => {
-    localStorage.setItem("isAuthenticated", "false");
-    setIsLoggedIn(false);
-  };
+  const wallet = getUserWallet();
+  const walletAddress = wallet?.address;
 
   const NavLink = ({ to, icon: Icon, label }: { to: string; icon: React.ElementType; label: string }) => {
     const isActive = location.pathname === to;
@@ -84,16 +71,22 @@ const Navbar: React.FC = () => {
 
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-1">
-          {isLoggedIn ? (
+          {isAuthenticated ? (
             <>
               <NavLink to="/dashboard" icon={Home} label="Dashboard" />
               <NavLink to="/deposit" icon={PlusCircle} label="Deposit" />
               <NavLink to="/withdraw" icon={MinusCircle} label="Withdraw" />
               <NavLink to="/profile" icon={User} label="Profile" />
+              {walletAddress && (
+                <div className="px-3 py-1 bg-secondary/30 rounded-full text-xs font-mono flex items-center mr-2">
+                  <Wallet className="w-3 h-3 mr-1" />
+                  {`${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}`}
+                </div>
+              )}
               <Button 
                 variant="ghost" 
                 size="sm" 
-                onClick={handleLogout}
+                onClick={logout}
                 className="ml-2"
               >
                 <LogOut className="mr-2 h-4 w-4" />
@@ -107,7 +100,7 @@ const Navbar: React.FC = () => {
                 variant="default" 
                 size="sm"
                 className="shadow-md"
-                onClick={handleLogin} // For demo only
+                onClick={login}
               >
                 <Link to="/login">Login</Link>
               </Button>
@@ -134,8 +127,14 @@ const Navbar: React.FC = () => {
           transition={{ duration: 0.2 }}
         >
           <nav className="flex flex-col p-4 gap-2">
-            {isLoggedIn ? (
+            {isAuthenticated ? (
               <>
+                {walletAddress && (
+                  <div className="px-3 py-2 bg-secondary/30 rounded-md text-sm font-mono flex items-center mb-2">
+                    <Wallet className="w-4 h-4 mr-2" />
+                    {`${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}`}
+                  </div>
+                )}
                 <Link to="/dashboard" className="flex items-center gap-2 p-2 hover:bg-white/5 rounded-md">
                   <Home size={18} />
                   <span>Dashboard</span>
@@ -154,7 +153,7 @@ const Navbar: React.FC = () => {
                 </Link>
                 <button 
                   className="flex items-center gap-2 p-2 text-left hover:bg-white/5 rounded-md mt-2 text-destructive"
-                  onClick={handleLogout}
+                  onClick={logout}
                 >
                   <LogOut size={18} />
                   <span>Logout</span>

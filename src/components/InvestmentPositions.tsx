@@ -1,3 +1,4 @@
+
 // InvestmentPositions.tsx
 import React from 'react';
 import { motion } from 'framer-motion';
@@ -89,12 +90,16 @@ const fetchInvestmentPositions = async (): Promise<InvestmentPosition[]> => {
   });
 };
 
-const InvestmentPositions: React.FC = () => {
-  // Use react-query to fetch investment positions
-  const { data: investmentPositions, isLoading, isError } = useQuery<InvestmentPosition[]>(
-    'investmentPositions',
-    fetchInvestmentPositions
-  );
+interface InvestmentPositionsProps {
+  className?: string;
+}
+
+const InvestmentPositions: React.FC<InvestmentPositionsProps> = ({ className }) => {
+  // Use react-query to fetch investment positions - updated to use object syntax
+  const { data: investmentPositions, isLoading, isError } = useQuery({
+    queryKey: ['investmentPositions'],
+    queryFn: fetchInvestmentPositions
+  });
 
   // Handle loading and error states
   if (isLoading) {
@@ -110,7 +115,7 @@ const InvestmentPositions: React.FC = () => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="glass-panel rounded-xl shadow-lg overflow-hidden w-full max-w-5xl mx-auto"
+      className={cn("glass-panel rounded-xl shadow-lg overflow-hidden w-full max-w-5xl mx-auto", className)}
     >
       <div className="p-6 sm:p-8">
         <div className="text-center mb-8">

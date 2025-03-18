@@ -3,36 +3,35 @@ import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 import { Wallet, Check, Copy, ExternalLink } from "lucide-react";
-import { usePrivyAuth } from "@/hooks/usePrivyAuth";
 
 interface WalletConnectProps {
   networkType: "EVM" | "Solana";
 }
 
 const WalletConnect: React.FC<WalletConnectProps> = ({ networkType }) => {
-  const { isAuthenticated, getUserWallet, createWallet } = usePrivyAuth();
+  const [isConnected, setIsConnected] = useState(false);
   const [isConnecting, setIsConnecting] = useState(false);
+  const [walletAddress, setWalletAddress] = useState("");
   const [copied, setCopied] = useState(false);
-  
-  const privyWallet = getUserWallet();
-  const walletAddress = privyWallet?.address || "";
-  const isConnected = !!privyWallet;
 
-  const handleConnect = async () => {
+  const handleConnect = () => {
     setIsConnecting(true);
-    try {
-      // Use createWallet directly since linkWallet might not be available
-      await createWallet();
+    // Simulate connecting to wallet
+    setTimeout(() => {
       setIsConnecting(false);
-    } catch (error) {
-      console.error("Error connecting wallet:", error);
-      setIsConnecting(false);
-    }
+      setIsConnected(true);
+      // Generate a mock wallet address
+      setWalletAddress(
+        networkType === "EVM"
+          ? "0x" + Array.from({ length: 40 }, () => Math.floor(Math.random() * 16).toString(16)).join("")
+          : Array.from({ length: 32 }, () => Math.floor(Math.random() * 16).toString(16)).join("")
+      );
+    }, 1500);
   };
 
   const handleDisconnect = () => {
-    // Note: In Privy we don't typically disconnect embedded wallets
-    console.log("Disconnect requested - not implemented for embedded wallets");
+    setIsConnected(false);
+    setWalletAddress("");
   };
 
   const handleCopyAddress = () => {
@@ -40,18 +39,6 @@ const WalletConnect: React.FC<WalletConnectProps> = ({ networkType }) => {
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
-
-  // If not authenticated with Privy, show a message
-  if (!isAuthenticated) {
-    return (
-      <div className="glass-panel rounded-xl p-6 h-full flex flex-col items-center justify-center">
-        <h3 className="text-xl font-semibold mb-4">{networkType} Network</h3>
-        <p className="text-center text-muted-foreground">
-          Please login to access your wallet
-        </p>
-      </div>
-    );
-  }
 
   return (
     <div className="glass-panel rounded-xl p-6 h-full flex flex-col">
@@ -128,9 +115,7 @@ const WalletConnect: React.FC<WalletConnectProps> = ({ networkType }) => {
                     {copied ? <Check size={16} className="text-green-400" /> : <Copy size={16} />}
                   </button>
                   <a 
-                    href={`https://etherscan.io/address/${walletAddress}`}
-                    target="_blank"
-                    rel="noopener noreferrer" 
+                    href="#" 
                     className="p-1.5 hover:bg-white/5 rounded-md transition-colors ml-1"
                     aria-label="View on explorer"
                   >

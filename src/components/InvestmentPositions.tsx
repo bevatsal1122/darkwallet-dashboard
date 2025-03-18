@@ -1,7 +1,7 @@
 
 import React from "react";
 import { motion } from "framer-motion";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Card, CardContent } from "@/components/ui/card";
 import { Calendar, TrendingUp, TrendingDown } from "lucide-react";
 
 interface Position {
@@ -23,39 +23,39 @@ const InvestmentPositions: React.FC<InvestmentPositionsProps> = ({ className = "
   const positions: Position[] = [
     {
       id: "pos-1",
-      market: "Will Trump win the 2024 election?",
+      market: "Will Lakers beat Bulls in Game 7?",
       position: "YES",
-      allocation: 25,
-      currentValue: 3245.68,
+      allocation: 35,
+      currentValue: 4520.68,
       changePercent: 12.4,
-      expirationDate: "Nov 5, 2024"
+      expirationDate: "May 15, 2024"
     },
     {
       id: "pos-2",
-      market: "Will Bitcoin reach $100K in 2024?",
+      market: "Will Warriors win next match?",
       position: "YES",
-      allocation: 20,
-      currentValue: 2567.15,
+      allocation: 25,
+      currentValue: 3267.15,
       changePercent: 8.7,
-      expirationDate: "Dec 31, 2024"
+      expirationDate: "May 20, 2024"
     },
     {
       id: "pos-3",
-      market: "Will the Lakers win the NBA championship?",
+      market: "Will Celtics reach NBA finals?",
       position: "NO",
       allocation: 15,
       currentValue: 1842.30,
       changePercent: -4.2,
-      expirationDate: "Jun 20, 2024"
+      expirationDate: "Jun 5, 2024"
     },
     {
       id: "pos-4",
-      market: "Will GPT-5 be released this year?",
+      market: "Will LeBron score 30+ points?",
       position: "YES",
-      allocation: 10,
-      currentValue: 1256.45,
+      allocation: 25,
+      currentValue: 3156.45,
       changePercent: 15.8,
-      expirationDate: "Dec 31, 2024"
+      expirationDate: "May 12, 2024"
     }
   ];
 
@@ -68,44 +68,44 @@ const InvestmentPositions: React.FC<InvestmentPositionsProps> = ({ className = "
     >
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-semibold">Active Positions</h2>
-        <span className="text-sm text-muted-foreground">Managed by AI Agent</span>
+        <span className="text-sm text-muted-foreground">NBA Sports Markets</span>
       </div>
       
-      <div className="overflow-x-auto">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Market</TableHead>
-              <TableHead className="text-right">Position</TableHead>
-              <TableHead className="text-right">Allocation</TableHead>
-              <TableHead className="text-right">Current Value</TableHead>
-              <TableHead className="text-right">Performance</TableHead>
-              <TableHead className="text-right">Expiration</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {positions.map((position) => (
-              <TableRow key={position.id}>
-                <TableCell className="font-medium">{position.market}</TableCell>
-                <TableCell className="text-right">{position.position}</TableCell>
-                <TableCell className="text-right">{position.allocation}%</TableCell>
-                <TableCell className="text-right">${position.currentValue.toLocaleString()}</TableCell>
-                <TableCell className="text-right">
-                  <div className={`flex items-center justify-end gap-1 ${position.changePercent >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                    {position.changePercent >= 0 ? <TrendingUp size={16} /> : <TrendingDown size={16} />}
-                    {Math.abs(position.changePercent)}%
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {positions.map((position) => (
+          <Card key={position.id} className="overflow-hidden border-0 bg-card/50 hover:bg-card/80 transition-all duration-200">
+            <CardContent className="p-4">
+              <div className="flex justify-between items-start">
+                <div className="flex-1">
+                  <h3 className="font-medium text-base mb-1">{position.market}</h3>
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className={`text-xs px-2 py-0.5 rounded-full ${position.position === "YES" ? "bg-green-500/20 text-green-400" : "bg-red-500/20 text-red-400"}`}>
+                      {position.position}
+                    </span>
+                    <span className="text-xs text-muted-foreground flex items-center gap-1">
+                      <Calendar size={12} />
+                      {position.expirationDate}
+                    </span>
                   </div>
-                </TableCell>
-                <TableCell className="text-right">
-                  <div className="flex items-center justify-end gap-1 text-muted-foreground">
-                    <Calendar size={14} />
-                    {position.expirationDate}
-                  </div>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+                </div>
+                <div className={`flex items-center justify-end gap-1 text-sm ${position.changePercent >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                  {position.changePercent >= 0 ? <TrendingUp size={16} /> : <TrendingDown size={16} />}
+                  {Math.abs(position.changePercent)}%
+                </div>
+              </div>
+              <div className="flex justify-between items-center mt-2 pt-2 border-t border-border/30">
+                <div>
+                  <p className="text-xs text-muted-foreground">Allocation</p>
+                  <p className="font-medium">{position.allocation}%</p>
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground">Current Value</p>
+                  <p className="font-medium">${position.currentValue.toLocaleString()}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
       </div>
     </motion.div>
   );

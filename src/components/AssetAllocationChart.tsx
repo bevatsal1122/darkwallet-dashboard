@@ -9,19 +9,19 @@ interface AssetAllocationChartProps {
 }
 
 const AssetAllocationChart: React.FC<AssetAllocationChartProps> = ({ className = "" }) => {
-  // Mock data for the pie chart
+  // Mock data for the pie chart focused on NBA markets
   const data = [
-    { name: "Crypto Election 2024", value: 45, color: "#8B5CF6" },
-    { name: "Sports Events", value: 25, color: "#0EA5E9" },
-    { name: "Political Outcomes", value: 20, color: "#F97316" },
-    { name: "Entertainment", value: 10, color: "#D946EF" },
+    { name: "Game Winners", value: 45, color: "#8B5CF6" },
+    { name: "Player Points", value: 25, color: "#0EA5E9" },
+    { name: "Team Totals", value: 20, color: "#F97316" },
+    { name: "Quarters/Halves", value: 10, color: "#D946EF" },
   ];
 
   const chartConfig = {
-    "Crypto Election 2024": { color: "#8B5CF6" },
-    "Sports Events": { color: "#0EA5E9" },
-    "Political Outcomes": { color: "#F97316" },
-    "Entertainment": { color: "#D946EF" },
+    "Game Winners": { color: "#8B5CF6" },
+    "Player Points": { color: "#0EA5E9" },
+    "Team Totals": { color: "#F97316" },
+    "Quarters/Halves": { color: "#D946EF" },
   };
 
   return (
@@ -31,7 +31,7 @@ const AssetAllocationChart: React.FC<AssetAllocationChartProps> = ({ className =
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: 0.2 }}
     >
-      <h2 className="text-xl font-semibold mb-4">Asset Allocation</h2>
+      <h2 className="text-xl font-semibold mb-4">NBA Market Allocation</h2>
       
       <div className="w-full h-[300px]">
         <ChartContainer config={chartConfig} className="h-full">

@@ -1,234 +1,183 @@
-
-import React from "react";
-import { motion } from "framer-motion";
-import { Card, CardContent } from "@/components/ui/card";
-import { Calendar, TrendingUp, TrendingDown, BarChart3, Percent, AlertCircle, Clock, Target } from "lucide-react";
+// InvestmentPositions.tsx
+import React from 'react';
+import { motion } from 'framer-motion';
+import { useQuery } from '@tanstack/react-query';
 import { Progress } from "@/components/ui/progress";
-import { Badge } from "@/components/ui/badge";
-import { 
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
+import { Badge } from "@/components/ui/badge"
+import { SparklesIcon, ArrowUp, ArrowDown } from 'lucide-react';
+import { cn } from "@/lib/utils";
 
-interface Position {
+// Define a type for the investment position
+interface InvestmentPosition {
   id: string;
-  market: string;
-  position: string;
-  allocation: number;
-  currentValue: number;
-  changePercent: number;
-  expirationDate: string;
-  odds: string;
-  probability: number;
-  liquidityScore: number;
-  volatility: "high" | "medium" | "low";
-  status: "positive" | "negative" | "neutral";
+  name: string;
+  symbol: string;
+  amount: number;
+  price: number;
+  percentage: number;
+  profit: number;
+  profitPercentage: number;
 }
 
-interface InvestmentPositionsProps {
-  className?: string;
-}
+// Mock function to simulate fetching investment positions
+const fetchInvestmentPositions = async (): Promise<InvestmentPosition[]> => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      const mockData: InvestmentPosition[] = [
+        {
+          id: "1",
+          name: "Bitcoin",
+          symbol: "BTC",
+          amount: 0.05,
+          price: 65000,
+          percentage: 40,
+          profit: 500,
+          profitPercentage: 0.8,
+        },
+        {
+          id: "2",
+          name: "Ethereum",
+          symbol: "ETH",
+          amount: 1.5,
+          price: 3500,
+          percentage: 30,
+          profit: 300,
+          profitPercentage: 0.6,
+        },
+        {
+          id: "3",
+          name: "Solana",
+          symbol: "SOL",
+          amount: 20,
+          price: 150,
+          percentage: 15,
+          profit: 150,
+          profitPercentage: 0.5,
+        },
+        {
+          id: "4",
+          name: "Cardano",
+          symbol: "ADA",
+          amount: 500,
+          price: 0.5,
+          percentage: 10,
+          profit: 50,
+          profitPercentage: 0.1,
+        },
+        {
+          id: "5",
+          name: "Ripple",
+          symbol: "XRP",
+          amount: 1000,
+          price: 0.6,
+          percentage: 5,
+          profit: 20,
+          profitPercentage: 0.03,
+        },
+      ];
+      resolve(mockData);
+    }, 500);
+  });
+};
 
-const InvestmentPositions: React.FC<InvestmentPositionsProps> = ({ className = "" }) => {
-  // Enhanced mock data for positions
-  const positions: Position[] = [
-    {
-      id: "pos-1",
-      market: "Will Lakers beat Bulls in Game 7?",
-      position: "YES",
-      allocation: 35,
-      currentValue: 4520.68,
-      changePercent: 12.4,
-      expirationDate: "May 15, 2024",
-      odds: "+125",
-      probability: 68,
-      liquidityScore: 85,
-      volatility: "medium",
-      status: "positive"
-    },
-    {
-      id: "pos-2",
-      market: "Will Warriors win next match?",
-      position: "YES",
-      allocation: 25,
-      currentValue: 3267.15,
-      changePercent: 8.7,
-      expirationDate: "May 20, 2024",
-      odds: "-110",
-      probability: 72,
-      liquidityScore: 78,
-      volatility: "low",
-      status: "positive"
-    },
-    {
-      id: "pos-3",
-      market: "Will Celtics reach finals?",
-      position: "NO",
-      allocation: 15,
-      currentValue: 1842.30,
-      changePercent: -4.2,
-      expirationDate: "Jun 5, 2024",
-      odds: "+180",
-      probability: 45,
-      liquidityScore: 62,
-      volatility: "high",
-      status: "negative"
-    },
-    {
-      id: "pos-4",
-      market: "Will LeBron score 30+ points?",
-      position: "YES",
-      allocation: 25,
-      currentValue: 3156.45,
-      changePercent: 15.8,
-      expirationDate: "May 12, 2024",
-      odds: "-150",
-      probability: 82,
-      liquidityScore: 91,
-      volatility: "low",
-      status: "positive"
-    }
-  ];
+const InvestmentPositions: React.FC = () => {
+  // Use react-query to fetch investment positions
+  const { data: investmentPositions, isLoading, isError } = useQuery<InvestmentPosition[]>(
+    'investmentPositions',
+    fetchInvestmentPositions
+  );
 
-  const totalInvested = positions.reduce((sum, pos) => sum + pos.currentValue, 0);
+  // Handle loading and error states
+  if (isLoading) {
+    return <p>Loading investment positions...</p>;
+  }
 
-  // Helper function to get color based on position status
-  const getStatusColor = (status: Position['status']) => {
-    switch (status) {
-      case 'positive': return 'from-green-500/20 to-green-500/5 border-green-500/30';
-      case 'negative': return 'from-red-500/20 to-red-500/5 border-red-500/30';
-      case 'neutral': return 'from-blue-500/20 to-blue-500/5 border-blue-500/30';
-      default: return '';
-    }
-  };
-
-  // Helper function to get volatility badge
-  const getVolatilityBadge = (volatility: Position['volatility']) => {
-    switch (volatility) {
-      case 'high': return <Badge className="bg-red-500/20 text-red-400 hover:bg-red-500/30">High Volatility</Badge>;
-      case 'medium': return <Badge className="bg-amber-500/20 text-amber-400 hover:bg-amber-500/30">Medium Volatility</Badge>;
-      case 'low': return <Badge className="bg-green-500/20 text-green-400 hover:bg-green-500/30">Low Volatility</Badge>;
-      default: return null;
-    }
-  };
+  if (isError) {
+    return <p>Error loading investment positions.</p>;
+  }
 
   return (
-    <motion.div 
-      className={`glass-panel p-4 rounded-xl ${className}`}
+    <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay: 0.4 }}
+      transition={{ duration: 0.5 }}
+      className="glass-panel rounded-xl shadow-lg overflow-hidden w-full max-w-5xl mx-auto"
     >
-      <div className="flex justify-between items-center mb-4">
-        <div>
-          <h2 className="text-xl font-semibold">Active Positions</h2>
-          <p className="text-sm text-muted-foreground">Total: ${totalInvested.toLocaleString()}</p>
+      <div className="p-6 sm:p-8">
+        <div className="text-center mb-8">
+          <h2 className="text-2xl font-bold mb-2">Investment Positions</h2>
+          <p className="text-muted-foreground text-sm">
+            Overview of your current investment portfolio.
+          </p>
         </div>
-        <div className="flex items-center gap-2">
-          <span className="text-sm bg-primary/20 px-2 py-1 rounded-full text-primary-foreground">
-            Sports Markets
-          </span>
-          <span className="flex items-center gap-1 text-sm text-amber-400">
-            <Calendar size={14} />
-            Next expiry: May 12
-          </span>
+
+        <Table>
+          <TableCaption>A comprehensive overview of your investment positions.</TableCaption>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="w-[50px]">Rank</TableHead>
+              <TableHead>Name</TableHead>
+              <TableHead>Symbol</TableHead>
+              <TableHead>Amount</TableHead>
+              <TableHead>Price</TableHead>
+              <TableHead className="text-right">Percentage</TableHead>
+              <TableHead className="text-right">Profit</TableHead>
+              <TableHead className="text-right">Profit %</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {investmentPositions?.map((position, index) => (
+              <TableRow key={position.id}>
+                <TableCell className="font-medium">{index + 1}</TableCell>
+                <TableCell>{position.name}</TableCell>
+                <TableCell>{position.symbol}</TableCell>
+                <TableCell>{position.amount}</TableCell>
+                <TableCell>${position.price.toFixed(2)}</TableCell>
+                <TableCell className="text-right">{position.percentage}%</TableCell>
+                <TableCell className="text-right">${position.profit.toFixed(2)}</TableCell>
+                <TableCell className="text-right">
+                  {position.profitPercentage > 0 ? (
+                    <Badge variant="outline" className="gap-1.5">
+                      <ArrowUp className="h-4 w-4" />
+                      {position.profitPercentage.toFixed(2)}%
+                    </Badge>
+                  ) : (
+                    <Badge variant="outline" className="gap-1.5">
+                      <ArrowDown className="h-4 w-4" />
+                      {position.profitPercentage.toFixed(2)}%
+                    </Badge>
+                  )}
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+
+        <div className="mt-8">
+          <h3 className="text-xl font-semibold mb-4">Portfolio Allocation</h3>
+          <ul className="space-y-4">
+            {investmentPositions?.map((position) => (
+              <li key={position.id} className="flex items-center justify-between">
+                <div className="flex items-center">
+                  <SparklesIcon className="mr-2 h-5 w-5 text-accent" />
+                  <span>{position.name} ({position.percentage}%)</span>
+                </div>
+                <div className="w-32">
+                  <Progress value={position.percentage} className="h-2 [&>div]:bg-[#10B981]" />
+                </div>
+              </li>
+            ))}
+          </ul>
         </div>
-      </div>
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {positions.map((position) => (
-          <Collapsible key={position.id} defaultOpen={true} className="w-full">
-            <Card 
-              className={`overflow-hidden border bg-gradient-to-r ${getStatusColor(position.status)} hover:shadow-md transition-all duration-200`}
-            >
-              <CollapsibleTrigger className="w-full text-left">
-                <CardContent className="p-4 pb-3 border-b border-border/30">
-                  <div className="flex justify-between items-start">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-1">
-                        <h3 className="font-medium text-base">{position.market}</h3>
-                        {position.status === 'positive' && <AlertCircle size={16} className="text-green-400" />}
-                        {position.status === 'negative' && <AlertCircle size={16} className="text-red-400" />}
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <span className={`text-xs px-2 py-0.5 rounded-full ${position.position === "YES" ? "bg-green-500/20 text-green-400" : "bg-red-500/20 text-red-400"}`}>
-                          {position.position}
-                        </span>
-                        <span className="text-xs text-muted-foreground flex items-center gap-1">
-                          <Clock size={12} />
-                          {position.expirationDate}
-                        </span>
-                      </div>
-                    </div>
-                    <div className={`flex items-center justify-end gap-1 text-sm font-medium ${position.changePercent >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                      {position.changePercent >= 0 ? <TrendingUp size={16} /> : <TrendingDown size={16} />}
-                      {Math.abs(position.changePercent)}%
-                    </div>
-                  </div>
-                </CardContent>
-              </CollapsibleTrigger>
-              
-              <CollapsibleContent>
-                <CardContent className="p-4 pt-3">
-                  <div className="space-y-4">
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <p className="text-xs text-muted-foreground">Allocation</p>
-                        <p className="font-medium">{position.allocation}%</p>
-                      </div>
-                      <div>
-                        <p className="text-xs text-muted-foreground">Current Value</p>
-                        <p className="font-medium">${position.currentValue.toLocaleString()}</p>
-                      </div>
-                    </div>
-                    
-                    <div>
-                      <div className="flex justify-between items-center mb-1">
-                        <p className="text-xs text-muted-foreground flex items-center gap-1">
-                          <Target size={12} />
-                          AI Confidence: {position.probability}%
-                        </p>
-                        <p className="text-xs font-medium">{position.probability}%</p>
-                      </div>
-                      <Progress 
-                        value={position.probability} 
-                        className="h-2" 
-                        indicatorClassName={position.probability > 60 ? "bg-green-500" : position.probability > 40 ? "bg-amber-500" : "bg-red-500"}
-                      />
-                    </div>
-                    
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <p className="text-xs text-muted-foreground flex items-center gap-1">
-                          <BarChart3 size={12} />
-                          Market Odds
-                        </p>
-                        <p className={`font-medium ${position.odds.startsWith('+') ? 'text-green-400' : 'text-red-400'}`}>
-                          {position.odds}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-xs text-muted-foreground flex items-center gap-1">
-                          <Percent size={12} />
-                          Liquidity Score
-                        </p>
-                        <p className="font-medium">{position.liquidityScore}/100</p>
-                      </div>
-                    </div>
-                    
-                    <div className="flex justify-between items-center">
-                      {getVolatilityBadge(position.volatility)}
-                      <span className={`text-xs px-2 py-0.5 rounded-full ${position.status === 'positive' ? 'bg-green-500/20 text-green-400' : position.status === 'negative' ? 'bg-red-500/20 text-red-400' : 'bg-blue-500/20 text-blue-400'}`}>
-                        {position.status === 'positive' ? 'Performing Well' : position.status === 'negative' ? 'Underperforming' : 'Neutral'}
-                      </span>
-                    </div>
-                  </div>
-                </CardContent>
-              </CollapsibleContent>
-            </Card>
-          </Collapsible>
-        ))}
       </div>
     </motion.div>
   );

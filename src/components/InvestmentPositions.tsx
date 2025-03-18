@@ -2,7 +2,12 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
-import { Calendar, TrendingUp, TrendingDown } from "lucide-react";
+import { Calendar, TrendingUp, TrendingDown, BarChart3, Percent } from "lucide-react";
+import { 
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 
 interface Position {
   id: string;
@@ -12,6 +17,8 @@ interface Position {
   currentValue: number;
   changePercent: number;
   expirationDate: string;
+  odds: string;
+  probability: number;
 }
 
 interface InvestmentPositionsProps {
@@ -19,7 +26,7 @@ interface InvestmentPositionsProps {
 }
 
 const InvestmentPositions: React.FC<InvestmentPositionsProps> = ({ className = "" }) => {
-  // Mock data for positions
+  // Enhanced mock data for positions
   const positions: Position[] = [
     {
       id: "pos-1",
@@ -28,7 +35,9 @@ const InvestmentPositions: React.FC<InvestmentPositionsProps> = ({ className = "
       allocation: 35,
       currentValue: 4520.68,
       changePercent: 12.4,
-      expirationDate: "May 15, 2024"
+      expirationDate: "May 15, 2024",
+      odds: "+125",
+      probability: 68
     },
     {
       id: "pos-2",
@@ -37,7 +46,9 @@ const InvestmentPositions: React.FC<InvestmentPositionsProps> = ({ className = "
       allocation: 25,
       currentValue: 3267.15,
       changePercent: 8.7,
-      expirationDate: "May 20, 2024"
+      expirationDate: "May 20, 2024",
+      odds: "-110",
+      probability: 72
     },
     {
       id: "pos-3",
@@ -46,7 +57,9 @@ const InvestmentPositions: React.FC<InvestmentPositionsProps> = ({ className = "
       allocation: 15,
       currentValue: 1842.30,
       changePercent: -4.2,
-      expirationDate: "Jun 5, 2024"
+      expirationDate: "Jun 5, 2024",
+      odds: "+180",
+      probability: 45
     },
     {
       id: "pos-4",
@@ -55,9 +68,13 @@ const InvestmentPositions: React.FC<InvestmentPositionsProps> = ({ className = "
       allocation: 25,
       currentValue: 3156.45,
       changePercent: 15.8,
-      expirationDate: "May 12, 2024"
+      expirationDate: "May 12, 2024",
+      odds: "-150",
+      probability: 82
     }
   ];
+
+  const totalInvested = positions.reduce((sum, pos) => sum + pos.currentValue, 0);
 
   return (
     <motion.div 
@@ -67,44 +84,78 @@ const InvestmentPositions: React.FC<InvestmentPositionsProps> = ({ className = "
       transition={{ duration: 0.5, delay: 0.4 }}
     >
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-semibold">Active Positions</h2>
-        <span className="text-sm text-muted-foreground">NBA Sports Markets</span>
+        <div>
+          <h2 className="text-xl font-semibold">Active Positions</h2>
+          <p className="text-sm text-muted-foreground">Total: ${totalInvested.toLocaleString()}</p>
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="text-sm bg-primary/20 px-2 py-1 rounded-full text-primary-foreground">
+            NBA Sports Markets
+          </span>
+          <span className="flex items-center gap-1 text-sm text-amber-400">
+            <Calendar size={14} />
+            Next expiry: May 12
+          </span>
+        </div>
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {positions.map((position) => (
-          <Card key={position.id} className="overflow-hidden border-0 bg-card/50 hover:bg-card/80 transition-all duration-200">
-            <CardContent className="p-4">
-              <div className="flex justify-between items-start">
-                <div className="flex-1">
-                  <h3 className="font-medium text-base mb-1">{position.market}</h3>
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className={`text-xs px-2 py-0.5 rounded-full ${position.position === "YES" ? "bg-green-500/20 text-green-400" : "bg-red-500/20 text-red-400"}`}>
-                      {position.position}
-                    </span>
-                    <span className="text-xs text-muted-foreground flex items-center gap-1">
-                      <Calendar size={12} />
-                      {position.expirationDate}
-                    </span>
+          <Collapsible key={position.id} defaultOpen={true} className="w-full">
+            <Card className="overflow-hidden border-0 bg-card/50 hover:bg-card/80 transition-all duration-200">
+              <CollapsibleTrigger className="w-full text-left">
+                <CardContent className="p-4 pb-3 border-b border-border/30">
+                  <div className="flex justify-between items-start">
+                    <div className="flex-1">
+                      <h3 className="font-medium text-base mb-1">{position.market}</h3>
+                      <div className="flex items-center gap-2">
+                        <span className={`text-xs px-2 py-0.5 rounded-full ${position.position === "YES" ? "bg-green-500/20 text-green-400" : "bg-red-500/20 text-red-400"}`}>
+                          {position.position}
+                        </span>
+                        <span className="text-xs text-muted-foreground flex items-center gap-1">
+                          <Calendar size={12} />
+                          {position.expirationDate}
+                        </span>
+                      </div>
+                    </div>
+                    <div className={`flex items-center justify-end gap-1 text-sm ${position.changePercent >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                      {position.changePercent >= 0 ? <TrendingUp size={16} /> : <TrendingDown size={16} />}
+                      {Math.abs(position.changePercent)}%
+                    </div>
                   </div>
-                </div>
-                <div className={`flex items-center justify-end gap-1 text-sm ${position.changePercent >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                  {position.changePercent >= 0 ? <TrendingUp size={16} /> : <TrendingDown size={16} />}
-                  {Math.abs(position.changePercent)}%
-                </div>
-              </div>
-              <div className="flex justify-between items-center mt-2 pt-2 border-t border-border/30">
-                <div>
-                  <p className="text-xs text-muted-foreground">Allocation</p>
-                  <p className="font-medium">{position.allocation}%</p>
-                </div>
-                <div>
-                  <p className="text-xs text-muted-foreground">Current Value</p>
-                  <p className="font-medium">${position.currentValue.toLocaleString()}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+                </CardContent>
+              </CollapsibleTrigger>
+              
+              <CollapsibleContent>
+                <CardContent className="p-4 pt-3">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <p className="text-xs text-muted-foreground">Allocation</p>
+                      <p className="font-medium">{position.allocation}%</p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-muted-foreground">Current Value</p>
+                      <p className="font-medium">${position.currentValue.toLocaleString()}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-muted-foreground flex items-center gap-1">
+                        <Percent size={12} />
+                        AI Confidence
+                      </p>
+                      <p className="font-medium">{position.probability}%</p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-muted-foreground flex items-center gap-1">
+                        <BarChart3 size={12} />
+                        Market Odds
+                      </p>
+                      <p className="font-medium">{position.odds}</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </CollapsibleContent>
+            </Card>
+          </Collapsible>
         ))}
       </div>
     </motion.div>

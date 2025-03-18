@@ -2,8 +2,13 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
-import { Timer, ArrowRight } from "lucide-react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Timer, ArrowRight, ChartBarIcon, PercentIcon, TrendingUp } from "lucide-react";
+import { 
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
 interface EventProps {
   className?: string;
@@ -56,76 +61,82 @@ const UpcomingEvents: React.FC<EventProps> = ({ className = "" }) => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: 0.5 }}
     >
-      <Tabs defaultValue="upcoming" className="w-full">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-semibold">NBA Markets</h2>
-          <TabsList>
-            <TabsTrigger value="upcoming">Upcoming</TabsTrigger>
-            <TabsTrigger value="stats">Stats</TabsTrigger>
-          </TabsList>
-        </div>
+      <Accordion type="multiple" defaultValue={["upcoming", "stats"]} className="w-full">
+        <AccordionItem value="upcoming" className="border-0">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl font-semibold">Upcoming Expirations</h2>
+            <AccordionTrigger className="py-0"></AccordionTrigger>
+          </div>
+          
+          <AccordionContent className="pb-0">
+            <div className="space-y-3">
+              {upcomingEvents.map((event) => (
+                <Card key={event.id} className="overflow-hidden border-0 bg-card/50 hover:bg-card/80 transition-all duration-200">
+                  <CardContent className="p-3">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <h3 className="font-medium">{event.title}</h3>
+                          <span className="text-xs px-1.5 py-0.5 rounded-full bg-primary/20 text-primary-foreground">
+                            {event.type}
+                          </span>
+                        </div>
+                        <p className="text-sm text-muted-foreground mt-0.5">Position: {event.position}</p>
+                      </div>
+                      <div className="text-right">
+                        <div className="flex items-center text-xs text-amber-400">
+                          <Timer size={12} className="mr-1" />
+                          <span>Expires in {event.timeRemaining}</span>
+                        </div>
+                        <p className="text-xs text-muted-foreground mt-0.5">{event.allocation}% allocated</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </AccordionContent>
+        </AccordionItem>
         
-        <TabsContent value="upcoming" className="mt-0">
-          <div className="space-y-3">
-            {upcomingEvents.map((event) => (
-              <Card key={event.id} className="overflow-hidden border-0 bg-card/50 hover:bg-card/80 transition-all duration-200">
-                <CardContent className="p-3">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <h3 className="font-medium">{event.title}</h3>
-                        <span className="text-xs px-1.5 py-0.5 rounded-full bg-primary/20 text-primary-foreground">
-                          {event.type}
-                        </span>
-                      </div>
-                      <p className="text-sm text-muted-foreground mt-0.5">Position: {event.position}</p>
-                    </div>
-                    <div className="text-right">
-                      <div className="flex items-center text-xs text-amber-400">
-                        <Timer size={12} className="mr-1" />
-                        <span>Expires in {event.timeRemaining}</span>
-                      </div>
-                      <p className="text-xs text-muted-foreground mt-0.5">{event.allocation}% allocated</p>
-                    </div>
-                  </div>
+        <AccordionItem value="stats" className="border-0 mt-6">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl font-semibold">NBA Market Stats</h2>
+            <AccordionTrigger className="py-0"></AccordionTrigger>
+          </div>
+          
+          <AccordionContent className="pb-0">
+            <div className="grid grid-cols-2 gap-4">
+              <Card className="overflow-hidden border-0 bg-card/50">
+                <CardContent className="p-4">
+                  <h3 className="text-xs text-muted-foreground mb-1">Total NBA Markets</h3>
+                  <p className="text-xl font-bold">{nbaStats.totalMarkets}</p>
                 </CardContent>
               </Card>
-            ))}
-          </div>
-        </TabsContent>
-        
-        <TabsContent value="stats" className="mt-0">
-          <div className="grid grid-cols-2 gap-4">
-            <Card className="overflow-hidden border-0 bg-card/50">
-              <CardContent className="p-4">
-                <h3 className="text-xs text-muted-foreground mb-1">Total NBA Markets</h3>
-                <p className="text-xl font-bold">{nbaStats.totalMarkets}</p>
-              </CardContent>
-            </Card>
-            
-            <Card className="overflow-hidden border-0 bg-card/50">
-              <CardContent className="p-4">
-                <h3 className="text-xs text-muted-foreground mb-1">Success Rate</h3>
-                <p className="text-xl font-bold text-green-400">{nbaStats.avgSuccessRate}%</p>
-              </CardContent>
-            </Card>
-            
-            <Card className="overflow-hidden border-0 bg-card/50">
-              <CardContent className="p-4">
-                <h3 className="text-xs text-muted-foreground mb-1">Average ROI</h3>
-                <p className="text-xl font-bold text-green-400">+{nbaStats.avgROI}%</p>
-              </CardContent>
-            </Card>
-            
-            <Card className="overflow-hidden border-0 bg-card/50">
-              <CardContent className="p-4">
-                <h3 className="text-xs text-muted-foreground mb-1">Best Performance</h3>
-                <p className="text-xl font-bold">{nbaStats.bestPerforming}</p>
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
-      </Tabs>
+              
+              <Card className="overflow-hidden border-0 bg-card/50">
+                <CardContent className="p-4">
+                  <h3 className="text-xs text-muted-foreground mb-1">Success Rate</h3>
+                  <p className="text-xl font-bold text-green-400">{nbaStats.avgSuccessRate}%</p>
+                </CardContent>
+              </Card>
+              
+              <Card className="overflow-hidden border-0 bg-card/50">
+                <CardContent className="p-4">
+                  <h3 className="text-xs text-muted-foreground mb-1">Average ROI</h3>
+                  <p className="text-xl font-bold text-green-400">+{nbaStats.avgROI}%</p>
+                </CardContent>
+              </Card>
+              
+              <Card className="overflow-hidden border-0 bg-card/50">
+                <CardContent className="p-4">
+                  <h3 className="text-xs text-muted-foreground mb-1">Best Performance</h3>
+                  <p className="text-xl font-bold">{nbaStats.bestPerforming}</p>
+                </CardContent>
+              </Card>
+            </div>
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
     </motion.div>
   );
 };

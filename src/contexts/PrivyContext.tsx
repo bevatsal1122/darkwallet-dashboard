@@ -26,7 +26,10 @@ export const PrivyProviderWrapper: React.FC<PrivyContextProps> = ({ children }) 
           logo: 'https://your-app-logo.com/logo.png', // Replace with your app's logo
         },
         embeddedWallets: {
-          createOnLogin: true, // Auto-create a wallet for users
+          // Fixed: changed from boolean to object with createOnLogin property
+          createOnLogin: {
+            userControlledPassword: false,
+          },
           noPromptOnSignature: true,
         },
       }}

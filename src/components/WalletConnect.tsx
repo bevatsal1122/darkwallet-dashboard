@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 import { Wallet, Check, Copy, ExternalLink } from "lucide-react";
@@ -10,7 +10,7 @@ interface WalletConnectProps {
 }
 
 const WalletConnect: React.FC<WalletConnectProps> = ({ networkType }) => {
-  const { isAuthenticated, getUserWallet, linkWallet } = usePrivyAuth();
+  const { isAuthenticated, getUserWallet, createWallet } = usePrivyAuth();
   const [isConnecting, setIsConnecting] = useState(false);
   const [copied, setCopied] = useState(false);
   
@@ -21,7 +21,8 @@ const WalletConnect: React.FC<WalletConnectProps> = ({ networkType }) => {
   const handleConnect = async () => {
     setIsConnecting(true);
     try {
-      await linkWallet();
+      // Use createWallet directly since linkWallet might not be available
+      await createWallet();
       setIsConnecting(false);
     } catch (error) {
       console.error("Error connecting wallet:", error);
@@ -31,8 +32,7 @@ const WalletConnect: React.FC<WalletConnectProps> = ({ networkType }) => {
 
   const handleDisconnect = () => {
     // Note: In Privy we don't typically disconnect embedded wallets
-    // This would be for external wallets
-    console.log("Disconnect requested");
+    console.log("Disconnect requested - not implemented for embedded wallets");
   };
 
   const handleCopyAddress = () => {
